@@ -1,6 +1,4 @@
-$(function () { // Same as document.addEventListener("DOMContentLoaded"...
-
-  // Same as document.querySelector("#navbarToggle").addEventListener("blur",...
+$(function () {
   $("#navbarToggle").blur(function (event) {
     var screenWidth = window.innerWidth;
     if (screenWidth < 768) {
@@ -63,32 +61,13 @@ var switchMenuToActive = function () {
 // On page load (before images or CSS)
 document.addEventListener("DOMContentLoaded", function (event) {
 
-// TODO: STEP 0: Look over the code from
-// *** start ***
-// to
-// *** finish ***
-// below.
-// We changed this code to retrieve all categories from the server instead of
-// simply requesting home HTML snippet. We now also have another function
-// called buildAndShowHomeHTML that will receive all the categories from the server
-// and process them: choose random category, retrieve home HTML snippet, insert that
-// random category into the home HTML snippet, and then insert that snippet into our
-// main page (index.html).
-//
-// TODO: STEP 1: Substitute [...] below with the *value* of the function buildAndShowHomeHTML,
-// so it can be called when server responds with the categories data.
-
-// *** start ***
-// On first load, show home view
-showLoading("#main-content");
-$ajaxUtils.sendGetRequest(
-  allCategoriesUrl,
+  // On first load, show home view
+  showLoading("#main-content");
   $ajaxUtils.sendGetRequest(
-  allCategoriesUrl,
-  buildAndShowHomeHTML,
-  true); // Explicitly setting the flag to get JSON from server processed into an object literal
+    allCategoriesUrl,
+    buildAndShowHomeHTML, // STEP 1: Pass the function reference
+    true);
 });
-// *** finish **
 
 
 // Builds HTML for the home page based on categories array
@@ -99,12 +78,19 @@ function buildAndShowHomeHTML (categories) {
   $ajaxUtils.sendGetRequest(
     homeHtmlUrl,
     function (homeHtml) {
+
+      // STEP 2: Choose a random category and get its short_name
       var chosenCategoryShortName = chooseRandomCategory(categories).short_name;
+
+      // STEP 3: Substitute {{randomCategoryShortName}} in the home html snippet
+      // Wrap in single quotes so it produces valid JS like: $dc.loadMenuItems('L')
       var homeHtmlToInsertIntoMainPage = insertProperty(homeHtml, "randomCategoryShortName", "'" + chosenCategoryShortName + "'");
+
+      // STEP 4: Insert the produced HTML into the main page
       insertHtml("#main-content", homeHtmlToInsertIntoMainPage);
 
     },
-    false); // False here because we are getting just regular HTML from the server, so no need to process JSON.
+    false);
 }
 
 
@@ -190,7 +176,6 @@ function buildCategoriesViewHtml(categories,
   finalHtml += "</section>";
   return finalHtml;
 }
-
 
 
 // Builds HTML for the single category page based on the data
